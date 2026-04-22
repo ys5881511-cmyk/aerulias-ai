@@ -9,3 +9,9 @@ dashboard.out.log
 dashboard.err.log
 fastapi.out.log
 fastapi.err.log
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
