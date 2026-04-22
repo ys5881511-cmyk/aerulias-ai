@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Aerulias AI</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Aerulias AI</p>
+          <h1>Self-improving multi-agent answer system</h1>
+          <p class="hero-copy">Generate, critique, refine, remember, and explain the answer loop in a way anyone can follow.</p>
+        </div>
+        <div class="score-dial" aria-label="Final score">
+          <span id="scoreValue">--</span>
+          <small>score</small>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <form id="runForm" class="query-panel">
+          <label for="query">Query</label>
+          <textarea id="query" name="query" rows="7">Explain machine learning in simple terms</textarea>
+
+          <label for="sources" class="source-label">Sources</label>
+          <textarea id="sources" name="sources" rows="3" placeholder="Optional .txt/.md file or folder path, one per line"></textarea>
+
+          <div class="controls">
+            <label>
+              Rounds
+              <input id="rounds" type="number" min="1" max="5" value="2">
+            </label>
+            <label>
+              Target
+              <input id="target" type="number" min="1" max="100" value="90">
+            </label>
+            <label class="toggle">
+              <input id="useMemory" type="checkbox" checked>
+              <span>Memory</span>
+            </label>
+            <label class="toggle">
+              <input id="demoMode" type="checkbox">
+              <span>Demo</span>
+            </label>
+          </div>
+
+          <button id="runButton" type="submit">
+            <span class="button-icon">&gt;</span>
+            Run pipeline
+          </button>
+        </form>
+
+        <section class="answer-panel">
+          <div class="panel-head">
+            <h2>Final Answer</h2>
+            <span id="runStatus">Ready</span>
+          </div>
+          <p id="finalAnswer">Run the pipeline to generate, evaluate, and refine an answer.</p>
+        </section>
+      </section>
+
+      <section class="explain-strip">
+        <article>
+          <strong>1. Generate</strong>
+          <p>The first agent writes an answer.</p>
+        </article>
+        <article>
+          <strong>2. Evaluate</strong>
+          <p>The second agent scores and critiques it.</p>
+        </article>
+        <article>
+          <strong>3. Refine</strong>
+          <p>The third agent improves weak parts.</p>
+        </article>
+        <article>
+          <strong>4. Remember</strong>
+          <p>Useful lessons are saved for later.</p>
+        </article>
+      </section>
+
+      <section class="metrics">
+        <article>
+          <span id="roundCount">0</span>
+          <p>rounds</p>
+        </article>
+        <article>
+          <span id="targetValue">90</span>
+          <p>target</p>
+        </article>
+        <article>
+          <span id="memoryCount">0</span>
+          <p>memories</p>
+        </article>
+        <article>
+          <span id="historyCount">0</span>
+          <p>runs</p>
+        </article>
+      </section>
+
+      <section class="flow" aria-label="Pipeline flow">
+        <div class="flow-step active">Generator</div>
+        <div class="flow-line"></div>
+        <div class="flow-step">Evaluator</div>
+        <div class="flow-line"></div>
+        <div class="flow-step">Refiner</div>
+        <div class="flow-line"></div>
+        <div class="flow-step">Memory</div>
+      </section>
+
+      <section class="details">
+        <div>
+          <div class="section-head">
+            <h2>Improvement Rounds</h2>
+          </div>
+          <div id="roundsList" class="rounds-list"></div>
+
+          <div class="section-head portfolio-head">
+            <h2>Portfolio Summary</h2>
+          </div>
+          <div id="portfolioPanel" class="portfolio-panel"></div>
+        </div>
+        <aside>
+          <div class="section-head">
+            <h2>Memory</h2>
+          </div>
+          <div id="memoryList" class="side-list"></div>
+
+          <div class="section-head history-head">
+            <h2>History</h2>
+          </div>
+          <div id="historyList" class="side-list"></div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.pyc
+memory_store.json
+run_history.json
+benchmark_report.json
+model_comparison.json
+dashboard.out.log
+dashboard.err.log
+fastapi.out.log
+fastapi.err.log
