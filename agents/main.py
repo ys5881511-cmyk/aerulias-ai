@@ -1,3 +1,8 @@
+"""Main CLI entry point for running the Aerulias AI pipeline."""
+
+import logging
+from typing import List, Optional
+
 try:
     from .pipeline import run_pipeline
 except ImportError:
@@ -5,8 +10,20 @@ except ImportError:
 import argparse
 import json
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
-def parse_args():
+
+def parse_args() -> argparse.Namespace:
+    """Parse and return command-line arguments.
+    
+    Returns:
+        Parsed arguments namespace.
+    """
     parser = argparse.ArgumentParser(description="Run the Aerulias AI improvement pipeline.")
     parser.add_argument("query", nargs="*", help="User query to answer.")
     parser.add_argument("--rounds", type=int, default=2, help="Maximum refinement rounds.")
@@ -19,19 +36,28 @@ def parse_args():
 
 
 if __name__ == "__main__":
-    args = parse_args()
-    query = " ".join(args.query).strip() or input("Enter your query: ").strip()
- 
-    if not query:
-        print("Please enter a query.")
-    else:
-        result = run_pipeline(
-            query,
-            max_rounds=args.rounds,
-            target_score=args.target,
-            use_memory=not args.no_memory,
-            source_paths=args.sources,
-            save_outputs=not args.no_save,
-            demo_mode=args.demo
-        )
-        print(json.dumps(result, indent=2))
+    try:
+        args = parse_args()
+        query = " ".join(args.query).strip() or input("Enter your query: ").strip()
+     
+        if not query:
+            logger.error("Please enter a query.")
+        else:
+            logger.info(f"Starting pipeline with query: {query[:60]}...")
+            result = run_pipeline(
+                query,
+                max_rounds=args.rounds,
+                target_score=args.target,
+                use_memory=not args.no_memory,
+                source_paths=args.sources,
+                save_outputs=not args.no_save,
+                demo_mode=args.demo
+            )
+            print(json.dumps(result, indent=2))
+            logger.info("Pipeline execution completed successfully")
+    except KeyboardInterrupt:
+        logger.warning("Pipeline interrupted by user")
+    except Exception as e:
+        logger.error(f"Pipeline failed: {e}", exc_info=True)
+        raise
+

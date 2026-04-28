@@ -1,0 +1,17 @@
+name: aerulias-ai
+metadata:
+  description: Aerulias AI - Multi-agent answer improvement pipeline
+  author: Your Name
+
+services:
+  api:
+    project: .
+    language: python
+    host: appservice
+
+infra:
+  template: infra
+  parameters:
+    location: eastus
+    environmentName: ${AZURE_ENV_NAME}
+    resourceToken: ${AZURE_RESOURCE_TOKEN}

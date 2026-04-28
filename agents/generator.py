@@ -1,11 +1,26 @@
+"""Generator Agent: Creates initial answers from queries with memory and source context."""
+
 import json
+import logging
+from typing import Any, Dict
+
 try:
     from .common import chat_json
 except ImportError:
     from common import chat_json
 
+logger = logging.getLogger(__name__)
 
-def _normalize_answer(data):
+
+def _normalize_answer(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Normalize and validate confidence score to 0-100 range.
+    
+    Args:
+        data: Dictionary containing answer data with confidence field.
+        
+    Returns:
+        Dictionary with normalized confidence score (0-100).
+    """
     confidence = data.get("confidence", 0)
 
     if isinstance(confidence, float) and 0 <= confidence <= 1:
@@ -14,13 +29,28 @@ def _normalize_answer(data):
     try:
         confidence = int(confidence)
     except (TypeError, ValueError):
+        logger.warning(f"Invalid confidence value: {confidence}, defaulting to 0")
         confidence = 0
 
     data["confidence"] = max(0, min(100, confidence))
     return data
 
 
-def generate_answer(query, memory_context="", source_context=""):
+def generate_answer(query: str, memory_context: str = "", source_context: str = "") -> Dict[str, Any]:
+    """Generate an initial answer to a query using optional memory and source context.
+    
+    Args:
+        query: User question to answer.
+        memory_context: Optional formatted context from past mistakes.
+        source_context: Optional formatted context from source documents.
+        
+    Returns:
+        Dictionary with 'answer', 'reasoning', and 'confidence' fields.
+        Confidence is normalized to 0-100 range.
+        
+    Raises:
+        Gracefully handles API and parsing errors by returning fallback response.
+    """
     if memory_context:
         prompt = f"""
 You are an AI system with memory of past mistakes.
@@ -84,15 +114,20 @@ Sources:
 """
 
     try:
+        logger.debug(f"Generating answer for query: {query[:50]}...")
         data = chat_json(prompt, temperature=0.2)
-        return _normalize_answer(data)
-    except json.JSONDecodeError:
+        result = _normalize_answer(data)
+        logger.info(f"Successfully generated answer with confidence: {result.get('confidence', 0)}")
+        return result
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON parsing error in generator: {e}")
         return {
             "answer": "The model returned invalid JSON.",
             "reasoning": "Parsing failed",
             "confidence": 50
         }
     except Exception as error:
+        logger.error(f"Generator error: {error}", exc_info=True)
         return {
             "answer": "The model request failed.",
             "reasoning": str(error),

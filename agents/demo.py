@@ -1,4 +1,10 @@
+"""Demo Mode: Generates polished demo results without API calls for presentations."""
+
+import logging
 from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
+
+logger = logging.getLogger(__name__)
 
 try:
     from .portfolio import build_portfolio_summary
@@ -6,7 +12,25 @@ except ImportError:
     from portfolio import build_portfolio_summary
 
 
-def build_demo_result(query, max_rounds=2, target_score=90, use_memory=True, source_paths=None):
+def build_demo_result(
+    query: str,
+    max_rounds: int = 2,
+    target_score: int = 90,
+    use_memory: bool = True,
+    source_paths: Optional[List[str]] = None
+) -> Dict[str, Any]:
+    """Build a polished demo result for presentations without API calls.
+    
+    Args:
+        query: User query to use in demo.
+        max_rounds: Maximum rounds to simulate.
+        target_score: Target score for demo.
+        use_memory: Whether to include mock memory in demo.
+        source_paths: Whether to include mock sources in demo.
+        
+    Returns:
+        Complete pipeline result dictionary with demo data.
+    """
     generated = {
         "answer": (
             "Machine learning is a way for computers to learn patterns from data "

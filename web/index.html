@@ -3,11 +3,33 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Aerulias AI</title>
+    <title>Aerulias AI - Professional Multi-Agent System</title>
     <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   </head>
-  <body>
+  <body class="light-mode">
+    <header class="app-header">
+      <div class="header-container">
+        <div class="branding">
+          <h1 class="app-logo">⚡ Aerulias</h1>
+          <span class="version-badge">Pro v1.1</span>
+        </div>
+        <div class="header-controls">
+          <input id="searchBox" type="text" class="search-box" placeholder="🔍 Search history...">
+          <button class="header-btn" id="themeToggle" title="Toggle dark mode">🌙</button>
+          <button class="header-btn" id="exportBtn" title="Export results">📥</button>
+          <button class="header-btn" id="settingsBtn" title="Settings">⚙️</button>
+        </div>
+      </div>
+      <div class="header-tabs">
+        <button class="tab-btn active" data-tab="editor">✏️ Editor</button>
+        <button class="tab-btn" data-tab="analytics">📊 Analytics</button>
+        <button class="tab-btn" data-tab="compare">⚔️ Compare</button>
+      </div>
+    </header>
     <main class="shell">
+      <!-- EDITOR TAB -->
+      <section id="editor-tab" class="tab-content active">
       <section class="hero">
         <div>
           <p class="eyebrow">Aerulias AI</p>
@@ -56,9 +78,20 @@
         <section class="answer-panel">
           <div class="panel-head">
             <h2>Final Answer</h2>
-            <span id="runStatus">Ready</span>
+            <span id="runStatus" class="status-badge">Ready</span>
           </div>
-          <p id="finalAnswer">Run the pipeline to generate, evaluate, and refine an answer.</p>
+          <div class="progress-container" id="progressContainer" style="display:none;">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-steps">
+              <div class="progress-step" id="step-generate">📝 Generate</div>
+              <div class="progress-step" id="step-evaluate">✓ Evaluate</div>
+              <div class="progress-step" id="step-refine">✨ Refine</div>
+              <div class="progress-step" id="step-memory">💾 Memory</div>
+            </div>
+          </div>
+          <p id="finalAnswer" class="answer-text">Run the pipeline to generate, evaluate, and refine an answer.</p>
         </section>
       </section>
 
@@ -125,16 +158,131 @@
         <aside>
           <div class="section-head">
             <h2>Memory</h2>
+            <input type="text" id="memoryFilter" class="filter-input" placeholder="Filter...">
           </div>
           <div id="memoryList" class="side-list"></div>
 
           <div class="section-head history-head">
             <h2>History</h2>
+            <input type="text" id="historyFilter" class="filter-input" placeholder="Filter...">
           </div>
           <div id="historyList" class="side-list"></div>
         </aside>
       </section>
+      </section>
+
+      <!-- ANALYTICS TAB -->
+      <section id="analytics-tab" class="tab-content" style="display:none;">
+        <div class="analytics-header">
+          <h2>📊 Performance Analytics</h2>
+          <p>Track your pipeline's improvement over time</p>
+        </div>
+        <div class="analytics-grid">
+          <div class="analytics-card">
+            <h3>Score Distribution</h3>
+            <canvas id="scoreChart"></canvas>
+          </div>
+          <div class="analytics-card">
+            <h3>Improvement Trend</h3>
+            <canvas id="trendChart"></canvas>
+          </div>
+          <div class="analytics-card">
+            <h3>Rounds Used</h3>
+            <canvas id="roundsChart"></canvas>
+          </div>
+          <div class="analytics-card">
+            <h3>Quick Stats</h3>
+            <div class="stats-list">
+              <div class="stat-item">
+                <span class="stat-label">Avg Initial Score</span>
+                <span class="stat-value" id="avgInitial">--</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Avg Final Score</span>
+                <span class="stat-value" id="avgFinal">--</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Avg Improvement</span>
+                <span class="stat-value" id="avgImprovement">--</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Total Runs</span>
+                <span class="stat-value" id="totalRuns">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPARE TAB -->
+      <section id="compare-tab" class="tab-content" style="display:none;">
+        <div class="compare-header">
+          <h2>⚔️ Compare Results</h2>
+          <p>Side-by-side analysis of previous runs</p>
+        </div>
+        <div class="compare-container">
+          <div class="compare-selectors">
+            <div class="selector-group">
+              <label>Run 1</label>
+              <select id="compare1">
+                <option value="">Select a run...</option>
+              </select>
+            </div>
+            <div class="selector-group">
+              <label>Run 2</label>
+              <select id="compare2">
+                <option value="">Select a run...</option>
+              </select>
+            </div>
+            <button class="primary-button" id="compareBtn">Compare</button>
+          </div>
+          <div id="compareResults" class="compare-results"></div>
+        </div>
+      </section>
     </main>
+
+    <!-- MODALS -->
+    <div id="settingsModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>⚙️ Settings</h2>
+          <button class="modal-close" id="closeSettings">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="settings-group">
+            <label>API Timeout (seconds)</label>
+            <input type="number" id="apiTimeout" min="5" max="120" value="30">
+          </div>
+          <div class="settings-group">
+            <label>
+              <input type="checkbox" id="autoRefresh"> Auto-refresh sidebars
+            </label>
+          </div>
+          <div class="settings-group">
+            <label>
+              <input type="checkbox" id="showTimestamps" checked> Show timestamps
+            </label>
+          </div>
+          <button class="primary-button" id="saveSettings">Save Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="exportModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>📥 Export Results</h2>
+          <button class="modal-close" id="closeExport">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="export-options">
+            <button class="export-btn" id="exportJSON">📄 JSON</button>
+            <button class="export-btn" id="exportCSV">📊 CSV</button>
+            <button class="export-btn" id="exportHTML">🌐 HTML</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script src="/app.js"></script>
   </body>

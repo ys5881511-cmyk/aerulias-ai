@@ -1,5 +1,20 @@
-def build_portfolio_summary(result):
-    query = result.get("query", "a user query")
+"""Portfolio Generator: Creates resume bullets and LinkedIn summaries from pipeline results."""
+
+import logging
+from typing import Any, Dict
+
+logger = logging.getLogger(__name__)
+
+
+def build_portfolio_summary(result: Dict[str, Any]) -> Dict[str, Any]:
+    """Generate resume bullets and LinkedIn post from pipeline result.
+    
+    Args:
+        result: Complete pipeline result dictionary.
+        
+    Returns:
+        Dictionary with resume_bullets, linkedin_post, beginner_explanation, and stats.
+    """
     final_score = result.get("final_score", 0)
     rounds = len(result.get("rounds", []))
     source_count = len(result.get("sources", []))

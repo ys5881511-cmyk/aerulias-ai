@@ -75,7 +75,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         path = urlparse(self.path).path
 
-        if path != "/api/run":
+        if path not in ("/api/run", "/pipeline/run"):
             self.send_error(404)
             return
 

@@ -1,0 +1,7 @@
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+openai==1.83.0
+python-dotenv==1.0.0
+# Skipping pydantic-core build issues on Python 3.13
+# Using pre-built pydantic if available
+pydantic==2.13.3
